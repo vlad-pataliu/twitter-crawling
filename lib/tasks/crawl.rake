@@ -107,18 +107,6 @@ else
 
 	addInArrayMinus(artist_name_location, j, anotherHash, artist_name)
 
-	y = artist_name.grep(/[@]/)
-	z = y[0]
-
-	artist_name.each do |a|
-		if a.eql? z
-			# access the link and take name
-			puts "abcse"
-		else
-			the_artist_name = artist_name.join(" ")
-		end
-	end
-
 	artist_name_location.delete_at(0)
 
 	theAnotherHash = Hash[artist_name_location.map.with_index.to_a]
@@ -136,4 +124,18 @@ else
 	user_location[(user_location_length - 1)] = l[0..(l.length - 2)]
 
 	the_user_location = user_location.join(" ")
+
+	y = artist_name.grep(/[@]/)
+	z = y[0]
+
+	the_artist_name = []
+
+	artist_name.each do |a|
+		if a.eql? z
+			# access the link and take name
+			puts "abcse"
+		else
+			the_artist_name = artist_name.join(" ")
+		end
+	end
 end
