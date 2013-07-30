@@ -1,6 +1,5 @@
 require 'nokogiri'
 require 'open-uri'
-require 'twitter'
 
 url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
 
@@ -105,7 +104,6 @@ namespace :crawler do
 						if p.length == 0
 							artist_name = artist_name_location
 							the_artist_name = artist_name.join(" ")
-
 							puts "Artist name: " + the_artist_name
 							puts " "
 						else
@@ -114,7 +112,6 @@ namespace :crawler do
 							puts the_artist_name
 							puts " "
 						end
-
 					else
 						j = i[0]
 
@@ -146,7 +143,6 @@ namespace :crawler do
 						z = y[0]
 
 						the_artist_name = []
-
 						artist_name.each do |a|
 							if a.eql? z
 								# access the link and take name
