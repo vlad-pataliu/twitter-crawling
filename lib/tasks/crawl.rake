@@ -11,16 +11,16 @@ namespace :crawler do
 		# Variable to count how manu tweets to add into the array of tweets
 		iIndex = 0
 
-		smth = ""
+		previousTweet = ""
 
 		# Continue taking tweets
 		while (iIndex == 0)
 			doc = Nokogiri::HTML(open(url))
 			tweets = doc.at_css(".tweet-text").text
-			if tweets == smth
-				smth = smth
+			if tweets == previousTweet
+				previousTweet = previousTweet
 			else
-				smth = tweets
+				previousTweet = tweets
 
 				puts tweets
 
@@ -41,35 +41,35 @@ namespace :crawler do
 				hash = Hash[tweet_elements.map.with_index.to_a]
 
 				# Search by "\" (begining of the song name)
-				b = tweet_elements.grep(/^\"/)
+				beginingOfTheSong = tweet_elements.grep(/^\"/)
 
-				c = b[0]
+				elementAtTheBeginingOfTheSong = beginingOfTheSong[0]
 
-				if c.length == 0
-					smth = smth
+				if elementAtTheBeginingOfTheSong == nil
+					previousTweet = previousTweet
 					puts " "
 				else	
 
 					# Delete everything that is before that
-					deleteFromArray(tweet_elements, c, hash)
+					deleteFromArray(tweet_elements, elementAtTheBeginingOfTheSong, hash)
 
-					tweet_elements[0] = c[1..c.length]
+					tweet_elements[0] = elementAtTheBeginingOfTheSong[1..elementAtTheBeginingOfTheSong.length]
 
 					song_name = []
 
 					# Search by "\" again (end of the song name)
-					e = tweet_elements.grep(/\"/)
+					endOfTheSong = tweet_elements.grep(/\"/)
 
-					f = e[0]
+					elementAtTheEndOfTheSong = endOfTheSong[0]
 
 					ash = Hash[tweet_elements.map.with_index.to_a]
 
 					# Add the song name into an array
-					addInArray(tweet_elements, f, ash, song_name)
+					addInArray(tweet_elements, elementAtTheEndOfTheSong, ash, song_name)
 
 					song_name_length = song_name.length()
 
-					song_name[song_name_length - 1] = f[0..(f.length - 2)]
+					song_name[song_name_length - 1] = elementAtTheEndOfTheSong[0..(elementAtTheEndOfTheSong.length - 2)]
 
 					the_song_name = song_name.join(" ")
 
@@ -80,14 +80,14 @@ namespace :crawler do
 					artist_name_location = []
 
 					# Search by "http:"
-					g = tweet_elements.grep(/^http:/)
+					pageLink = tweet_elements.grep(/^http:/)
 				
-					h = g[0]
+					pageLinkFirstElement = pageLink[0]
 
 					theHash = Hash[tweet_elements.map.with_index.to_a]
 
 					# Delete the 'http:' string
-					addInArrayMinus(tweet_elements, h, theHash, artist_name_location)
+					addInArrayMinus(tweet_elements, pageLinkFirstElement, theHash, artist_name_location)
 
 					tweet_elements_length = tweet_elements.length()
 
@@ -97,58 +97,64 @@ namespace :crawler do
 
 					anotherHash = Hash[artist_name_location.map.with_index.to_a]
 
-					i = artist_name_location.grep(/^\(@/)
+					userLocation = artist_name_location.grep(/^\(@/)
 
-					if i.length == 0
-						p = artist_name_location.grep(/[@]/)
-						if p.length == 0
+					if userLocation.length == 0
+						artistLinkName = artist_name_location.grep(/[@]/)
+						if artistLinkName.length == 0
 							artist_name = artist_name_location
 							the_artist_name = artist_name.join(" ")
-							puts "Artist name: " + the_artist_name
+							puts "The Artist name: " + the_artist_name
 							puts " "
 						else
+							#puts " "
+							#puts artistLinkName
+							#puts " "
 							# access the link and take name
-							the_artist_name == Twitter.user("#{p}").screen_name
-							puts the_artist_name
-							puts " "
+							#the_artist_name == Twitter.user("#{artistLinkName}").name
+							#puts the_artist_name
+							puts " bbb "
 						end
 					else
-						j = i[0]
+						userLocationFirstElement = userLocation[0]
 
 						artist_name = []
 
-						addInArrayMinus(artist_name_location, j, anotherHash, artist_name)
+						addInArrayMinus(artist_name_location, userLocationFirstElement, anotherHash, artist_name)
 
 						artist_name_location.delete_at(0)
 
 						theAnotherHash = Hash[artist_name_location.map.with_index.to_a]
 
-						k = artist_name_location.grep(/[)]/)
+						userLocationEnd = artist_name_location.grep(/[)]/)
 
-						l = k[0]
+						userLocationEndFirstElement = userLocationEnd[0]
 
 						user_location = []
 
-						addInArray(artist_name_location, l, theAnotherHash, user_location)
+						addInArray(artist_name_location, userLocationEndFirstElement, theAnotherHash, user_location)
 
 						user_location_length = user_location.length()
 
-						user_location[(user_location_length - 1)] = l[0..(l.length - 2)]
+						user_location[(user_location_length - 1)] = userLocationEndFirstElement[0..(userLocationEndFirstElement.length - 2)]
 
 						the_user_location = user_location.join(" ")
 
 						puts "User location: " + the_user_location
 
-						y = artist_name.grep(/[@]/)
-						z = y[0]
+						artistNameLink = artist_name.grep(/[@]/)
+						artistNameLinkFirstElement = artistNameLink[0]
 
 						the_artist_name = []
-						artist_name.each do |a|
-							if a.eql? z
-								# access the link and take name
-								the_artist_name == Twitter.user("#{z}").screen_name
-								puts the_artist_name
+						artist_name.each do |arrayString|
+							if arrayString.eql? artistNameLinkFirstElement
 								puts " "
+								puts artistNameLinkFirstElement
+								puts " "
+								# access the link and take name
+								#the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
+								#puts the_artist_name
+								puts " aaaa "
 							else
 								the_artist_name = artist_name.join(" ")
 								puts "Artist name: " + the_artist_name
@@ -159,14 +165,13 @@ namespace :crawler do
 				end
 			end
 		end
-
 	end
 end
 
 # Method to delete everything that is before a certain string
 def deleteFromArray(initialArray, aString, aHash)
-	initialArray.each do |a|
-		if a.eql? aString
+	initialArray.each do |arrayString|
+		if arrayString.eql? aString
 			index = aHash[aString] - 1
 			for counter in 0..index
 				initialArray.delete_at(0)
@@ -177,9 +182,9 @@ end
 
 # Method to delete and add into another array upon a certain string, containing it
 def addInArray(initialArray, aString, aHash, anArray)
-	initialArray.each do |a|
-		if a.eql? aString
-			index = aHash[aString]
+	initialArray.each do |arrayString|
+		if arrayString.eql? aString
+			index = arrayString[aString]
 			for counter in 0..index
 				anArray.push(initialArray.delete_at(0))
 			end
@@ -189,8 +194,8 @@ end
 
 # Method to delete and add into another array upon a certain string, without containing it
 def addInArrayMinus(initialArray, aString, aHash, anArray)
-	initialArray.each do |a|
-		if a.eql? aString
+	initialArray.each do |arrayString|
+		if arrayString.eql? aString
 			index = aHash[aString] - 1
 			for counter in 0..index
 				anArray.push(initialArray.delete_at(0))
