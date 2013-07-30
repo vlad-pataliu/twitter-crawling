@@ -184,7 +184,7 @@ end
 def addInArray(initialArray, aString, aHash, anArray)
 	initialArray.each do |arrayString|
 		if arrayString.eql? aString
-			index = arrayString[aString]
+			index = aHash[aString]
 			for counter in 0..index
 				anArray.push(initialArray.delete_at(0))
 			end
