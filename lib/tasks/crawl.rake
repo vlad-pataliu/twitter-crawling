@@ -1,5 +1,4 @@
 require 'open-uri'
-require 'twitter'
 
 url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
 
@@ -140,7 +139,7 @@ while (iIndex == 0)
 					puts " "
 				else
 					# access the link and take name
-					the_artist_name == Twitter.user("#{p}").screen_name
+					the_artist_name = Twitter.user("#{p}").name
 					puts the_artist_name
 					puts " "
 				end
@@ -180,7 +179,7 @@ while (iIndex == 0)
 				artist_name.each do |a|
 					if a.eql? z
 						# access the link and take name
-						the_artist_name == Twitter.user("#{z}").screen_name
+						the_artist_name = Twitter.user("#{z}").name
 						puts the_artist_name
 						puts " "
 					else
