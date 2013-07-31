@@ -8,11 +8,10 @@ namespace :crawler do
 	task :fetch_songs => :environment do
 		
 		# Variable to count how manu tweets to add into the array of tweets
-		iIndex = 0
 		previousTweet = ""
 
 		# Continue taking tweets
-		while (iIndex == 0)
+		while true
 			doc = Nokogiri::HTML(open(url))
 			tweets = doc.at_css(".tweet-text").text
 			artist_name = []
