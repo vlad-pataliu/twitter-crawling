@@ -157,6 +157,14 @@ namespace :crawler do
 						puts " "
 					end
 				end
+
+				TwitterCrawl.create(
+					name: name,
+					username: username,
+					song_name: the_song_name,
+					artist_name: the_artist_name,
+					user_location: the_user_location
+				)
 			end
 		end
 	end

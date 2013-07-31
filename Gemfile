@@ -10,6 +10,10 @@ gem 'sqlite3'
 gem 'twitter'
 gem 'twitter-text'
 
+# Mongo
+gem 'mongoid', '~> 3.0.2'
+gem 'bson_ext'
+gem 'mongo_ext'
 
 # Gems used only for assets and not required
 # in production environments by default.
