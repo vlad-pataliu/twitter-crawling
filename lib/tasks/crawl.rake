@@ -13,7 +13,8 @@ namespace :crawler do
 		# Continue taking tweets
 		while true
 			doc = Nokogiri::HTML(open(url))
-			tweets = doc.at_css(".tweet-text").text
+
+			tweet = doc.at_css(".tweet-text").text
 			artist_name = []
 
 			if tweets != previousTweet
@@ -22,19 +23,21 @@ namespace :crawler do
 
 				# Take the real name of the user
 				name = doc.at_css(".show-popup-with-id").text
-				puts "Name: " + name
+				puts "Name: #{name}"
 
 				# Take the username of the user
 				username = doc.at_css(".js-action-profile-name b").text
-				puts "Username: " + username
+				puts "Username: #{username}"
 
-				tweet_elements = tweets.split
+				tweet_elements = tweet.split
+
 				hash = Hash[tweet_elements.map.with_index.to_a]
 
 				# Search by "\" (begining of the song name)
 				beginingOfTheSong = tweet_elements.grep(/^\"/)
 				elementAtTheBeginingOfTheSong = beginingOfTheSong[0]
 
+				# If no artist is found, take the next tweet
 				if elementAtTheBeginingOfTheSong.present?
 					# Delete everything that is before that
 					deleteFromArray(tweet_elements, elementAtTheBeginingOfTheSong, hash)
@@ -64,6 +67,7 @@ namespace :crawler do
 					addInArrayMinus(tweet_elements, pageLinkFirstElement, theHash, artist_name_location)
 					tweet_elements_length = tweet_elements.length()
 
+					# Delete all the elements starting with the 'http', if any
 					for counter in 0..tweet_elements_length
 						tweet_elements.delete_at(0)
 					end	
@@ -74,19 +78,18 @@ namespace :crawler do
 					if userLocation.length == 0
 						artistLinkName = artist_name_location.grep(/[@]/)
 						if artistLinkName.length == 0
-							artist_name = artist_name_location
-							the_artist_name = artist_name.join(" ")
-							puts "The Artist name: " + the_artist_name
-							puts " "
+							the_artist_name = artist_name_location.join(" ")
 						else
-							# access the link and take name
 							the_artist_name == Twitter.user("#{artistLinkName}").name
-							puts the_artist_name
 						end
+					puts "Artist name: #{the_artist_name}"
+					puts " "
+
 					else
 						userLocationFirstElement = userLocation[0]
 						artist_name = []
 						addInArrayMinus(artist_name_location, userLocationFirstElement, anotherHash, artist_name)
+						puts artist_name.length
 						artist_name_location.delete_at(0)
 						theAnotherHash = Hash[artist_name_location.map.with_index.to_a]
 						userLocationEnd = artist_name_location.grep(/[)]/)
@@ -99,28 +102,26 @@ namespace :crawler do
 						puts "User location: " + the_user_location
 						artistNameLink = artist_name.grep(/[@]/)
 						artistNameLinkFirstElement = artistNameLink[0]
-						artist_name.each do |arrayString|
-							if arrayString.eql? artistNameLinkFirstElement
-								# access the link and take name
-								the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
-								puts the_artist_name
-							else
-								the_artist_name = artist_name.join(" ")
+						puts "asdasdad #{artistNameLinkFirstElement}"
+						if artistNameLinkFirstElement != nil
+							artist_name.each do |arrayString|
+								if arrayString.eql? artistNameLinkFirstElement
+									the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
+								else
+									the_artist_name = artist_name.join(" ")
+								end
 							end
+							puts "Artist name: #{the_artist_name}"
+							puts " "
+						else
+							previousTweet = previousTweet
+							puts " "
 						end
-
-						puts "Artist name: #{the_artist_name}"
-						puts " "
 					end
 				end
 
-				TwitterCrawl.create(
-					name: name,
-					username: username,
-					song_name: the_song_name,
-					artist_name: the_artist_name,
-					user_location: the_user_location
-				)
+				# Add to database
+				add_to_db(name, username, the_song_name, the_artist_name, the_user_location)
 			end
 		end
 	end
@@ -160,4 +161,15 @@ def addInArrayMinus(initialArray, aString, aHash, anArray)
 			end
 		end
 	end
+end
+
+# Method to save all the information in the database
+def add_to_db(name, username, the_song_name, the_artist_name, the_user_location)
+	TwitterCrawl.create(
+		name: name,
+		username: username,
+		song_name: the_song_name,
+		artist_name: the_artist_name,
+		user_location: the_user_location 
+	)
 end
