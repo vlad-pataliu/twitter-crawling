@@ -5,25 +5,23 @@ url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
 
 desc "Crawl Twitter"
 namespace :crawler do
-	task :fetch_songs => :environment do		
-		# Variable to count how many tweets to add into the array of tweets
-		iIndex = 0
+	task :fetch_songs => :environment do
+		
+		# Variable to count how manu tweets to add into the array of tweets
 		previousTweet = ""
 
 		# Continue taking tweets
-		while (iIndex == 0)
+		while true
 			doc = Nokogiri::HTML(open(url))
-			tweet = doc.at_css(".tweet-text").text
 
+			tweets = doc.at_css(".tweet-text").text
 			artist_name = []
 
-			if tweet == previousTweet
-				tweet = previousTweet
-
+			if tweets == previousTweet
+				tweets = previousTweet
 			else
-				previousTweet = tweet
-
-				puts tweet
+				previousTweet = tweets
+				puts tweets
 				puts " "
 
 				# Take the real name of the user
@@ -50,38 +48,30 @@ namespace :crawler do
 				else	
 					# Delete everything that is before that
 					deleteFromArray(tweet_elements, elementAtTheBeginingOfTheSong, hash)
-
 					tweet_elements[0] = elementAtTheBeginingOfTheSong[1..elementAtTheBeginingOfTheSong.length]
-
 					song_name = []
 
 					# Search by "\" again (end of the song name)
 					endOfTheSong = tweet_elements.grep(/\"/)
 					elementAtTheEndOfTheSong = endOfTheSong[0]
-
 					ash = Hash[tweet_elements.map.with_index.to_a]
 
 					# Add the song name into an array
 					addInArray(tweet_elements, elementAtTheEndOfTheSong, ash, song_name)
-
 					song_name_length = song_name.length()
 					song_name[song_name_length - 1] = elementAtTheEndOfTheSong[0..(elementAtTheEndOfTheSong.length - 2)]
 					the_song_name = song_name.join(" ")
 					puts "Song name: " + the_song_name
-
 					tweet_elements.delete_at(0)
-
 					artist_name_location = []
 
 					# Search by "http:"
 					pageLink = tweet_elements.grep(/^http:/)
 					pageLinkFirstElement = pageLink[0]
-
 					theHash = Hash[tweet_elements.map.with_index.to_a]
 
 					# Delete the 'http:' string
 					addInArrayMinus(tweet_elements, pageLinkFirstElement, theHash, artist_name_location)
-
 					tweet_elements_length = tweet_elements.length()
 
 					# Delete all the elements starting with the 'http', if any
@@ -90,7 +80,6 @@ namespace :crawler do
 					end	
 
 					anotherHash = Hash[artist_name_location.map.with_index.to_a]
-
 					userLocation = artist_name_location.grep(/^\(@/)
 
 					if userLocation.length == 0
@@ -105,31 +94,20 @@ namespace :crawler do
 
 					else
 						userLocationFirstElement = userLocation[0]
-
 						artist_name = []
-
 						addInArrayMinus(artist_name_location, userLocationFirstElement, anotherHash, artist_name)
-
 						artist_name_location.delete_at(0)
-
 						theAnotherHash = Hash[artist_name_location.map.with_index.to_a]
-
 						userLocationEnd = artist_name_location.grep(/[)]/)
 						userLocationEndFirstElement = userLocationEnd[0]
-
 						user_location = []
-
 						addInArray(artist_name_location, userLocationEndFirstElement, theAnotherHash, user_location)
-
 						user_location_length = user_location.length()
 						user_location[(user_location_length - 1)] = userLocationEndFirstElement[0..(userLocationEndFirstElement.length - 2)]
-
 						the_user_location = user_location.join(" ")
 						puts "User location: " + the_user_location
-
 						artistNameLink = artist_name.grep(/[@]/)
 						artistNameLinkFirstElement = artistNameLink[0]
-
 						artist_name.each do |arrayString|
 							if arrayString.eql? artistNameLinkFirstElement
 								the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
