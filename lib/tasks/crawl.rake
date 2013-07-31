@@ -14,14 +14,14 @@ namespace :crawler do
 		while true
 			doc = Nokogiri::HTML(open(url))
 
-			tweets = doc.at_css(".tweet-text").text
+			tweet = doc.at_css(".tweet-text").text
 			artist_name = []
 
-			if tweets == previousTweet
-				tweets = previousTweet
+			if tweet == previousTweet
+				tweet = previousTweet
 			else
-				previousTweet = tweets
-				puts tweets
+				previousTweet = tweet
+				puts tweet
 				puts " "
 
 				# Take the real name of the user
@@ -96,6 +96,7 @@ namespace :crawler do
 						userLocationFirstElement = userLocation[0]
 						artist_name = []
 						addInArrayMinus(artist_name_location, userLocationFirstElement, anotherHash, artist_name)
+						puts artist_name.length
 						artist_name_location.delete_at(0)
 						theAnotherHash = Hash[artist_name_location.map.with_index.to_a]
 						userLocationEnd = artist_name_location.grep(/[)]/)
@@ -108,16 +109,21 @@ namespace :crawler do
 						puts "User location: " + the_user_location
 						artistNameLink = artist_name.grep(/[@]/)
 						artistNameLinkFirstElement = artistNameLink[0]
-						artist_name.each do |arrayString|
-							if arrayString.eql? artistNameLinkFirstElement
-								the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
-							else
-								the_artist_name = artist_name.join(" ")
+						puts "asdasdad #{artistNameLinkFirstElement}"
+						if artistNameLinkFirstElement != nil
+							artist_name.each do |arrayString|
+								if arrayString.eql? artistNameLinkFirstElement
+									the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
+								else
+									the_artist_name = artist_name.join(" ")
+								end
 							end
+							puts "Artist name: #{the_artist_name}"
+							puts " "
+						else
+							previousTweet = previousTweet
+							puts " "
 						end
-						the_artist_name = " "
-						puts "Artist name: #{the_artist_name}"
-						puts " "
 					end
 				end
 
