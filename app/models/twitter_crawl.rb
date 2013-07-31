@@ -6,5 +6,4 @@ class TwitterCrawl
   field :song_name,     type: String
   field :artist_name,   type: String
   field :user_location, type: String
-
 end
