@@ -16,12 +16,9 @@ namespace :crawler do
 			tweets = doc.at_css(".tweet-text").text
 			artist_name = []
 
-			if tweets == previousTweet
-				tweets = previousTweet
-			else
+			if tweets != previousTweet
 				previousTweet = tweets
-				puts tweets
-				puts " "
+				puts "#{tweets} \n"
 
 				# Take the real name of the user
 				name = doc.at_css(".show-popup-with-id").text
@@ -38,10 +35,7 @@ namespace :crawler do
 				beginingOfTheSong = tweet_elements.grep(/^\"/)
 				elementAtTheBeginingOfTheSong = beginingOfTheSong[0]
 
-				if elementAtTheBeginingOfTheSong == nil
-					previousTweet = previousTweet
-					puts " "
-				else	
+				if elementAtTheBeginingOfTheSong.present?
 					# Delete everything that is before that
 					deleteFromArray(tweet_elements, elementAtTheBeginingOfTheSong, hash)
 					tweet_elements[0] = elementAtTheBeginingOfTheSong[1..elementAtTheBeginingOfTheSong.length]
