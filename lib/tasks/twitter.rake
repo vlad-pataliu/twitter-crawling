@@ -1,5 +1,6 @@
 # Twitter gem documentation here: http://rdoc.info/gems/twitter
 
+desc "Crawl Twitter using Twitter gem"
 namespace :crawler do
   task :twitter => :environment do
     tweets = Twitter.search("soundtracking by -rt", { lang: 'en', count: 100 } )
