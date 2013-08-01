@@ -4,9 +4,9 @@ require 'open-uri'
 # In order to parse the tweets, use the following regex:
 # Artist:
 # 			--> twitter handle: tweets[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
-# 			--> name: 					tweets[/by[\w\W]+(((http\:\/\/){1}))/i], then test if tweets.index("( @") exists
-# Song title: 		tweets[/\"[\s\S\d\D\w\W]+\"/i]
-# Location: 			tweets[/\([\s]@([^\)]+)\)/i]
+# 			--> name: tweets[/by[\w\W]+(((http\:\/\/){1}))/i], then test if tweets.index("( @") exists
+# Song title: 		tweets[/\"[\s\S\d\D\w\W]+\"/i] - works
+# Location: 			tweets[/\([\s]*@([^\)]+)\)/i] - works
 
 url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
 
@@ -24,9 +24,9 @@ namespace :crawler do
 			tweet = doc.at_css(".tweet-text").text
 			artist_name = []
 
-			if tweets != previousTweet
-				previousTweet = tweets
-				puts "#{tweets} \n"
+			if tweet != previousTweet
+				previousTweet = tweet
+				puts "#{tweet} \n"
 
 				# Take the real name of the user
 				name = doc.at_css(".show-popup-with-id").text
@@ -83,10 +83,13 @@ namespace :crawler do
 					userLocation = artist_name_location.grep(/^\(@/)
 
 					if userLocation.length == 0
+						puts "doua"
 						artistLinkName = artist_name_location.grep(/[@]/)
 						if artistLinkName.length == 0
 							the_artist_name = artist_name_location.join(" ")
 						else
+							artistLinkName = artistLinkName[1..(artistLinkName.length)]
+							puts artistLinkName
 							the_artist_name == Twitter.user("#{artistLinkName}").name
 						end
 					puts "Artist name: #{the_artist_name}"
@@ -95,8 +98,9 @@ namespace :crawler do
 					else
 						userLocationFirstElement = userLocation[0]
 						artist_name = []
-						addInArrayMinus(artist_name_location, userLocationFirstElement, anotherHash, artist_name)
 						puts artist_name.length
+						addInArrayMinus(artist_name_location, userLocationFirstElement, anotherHash, artist_name)
+						puts artist_name
 						artist_name_location.delete_at(0)
 						theAnotherHash = Hash[artist_name_location.map.with_index.to_a]
 						userLocationEnd = artist_name_location.grep(/[)]/)
@@ -109,10 +113,12 @@ namespace :crawler do
 						puts "User location: " + the_user_location
 						artistNameLink = artist_name.grep(/[@]/)
 						artistNameLinkFirstElement = artistNameLink[0]
-						puts "asdasdad #{artistNameLinkFirstElement}"
+						#puts "asdasdad #{artistNameLinkFirstElement}"
 						if artistNameLinkFirstElement != nil
 							artist_name.each do |arrayString|
 								if arrayString.eql? artistNameLinkFirstElement
+									artistNameLinkFirstElement = artistNameLinkFirstElement[1..(artistNameLinkFirstElement.length)]
+									puts artistNameLinkFirstElement
 									the_artist_name == Twitter.user("#{artistNameLinkFirstElement}").name
 								else
 									the_artist_name = artist_name.join(" ")
