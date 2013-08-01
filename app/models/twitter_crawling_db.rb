@@ -1,6 +1,6 @@
-class TwitterCrawling
+class TwitterCrawlingDb
   include Mongoid::Document
-  include Mongoid::ActiveRecordBridge
+  # include Mongoid::ActiveRecordBridge
 
   field :name,          type: String
   field :username,      type: String
