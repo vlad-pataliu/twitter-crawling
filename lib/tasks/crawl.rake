@@ -1,6 +1,13 @@
 require 'nokogiri'
 require 'open-uri'
 
+# In order to parse the tweets, use the following regex:
+# Artist:
+# 			--> twitter handle: tweets[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
+# 			--> name: 					tweets[/by[\w\W]+(((http\:\/\/){1}))/i], then test if tweets.index("( @") exists
+# Song title: 		tweets[/\"[\s\S\d\D\w\W]+\"/i]
+# Location: 			tweets[/\([\s]@([^\)]+)\)/i]
+
 url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
 
 desc "Crawl Twitter"
