@@ -21,3 +21,5 @@ end
 
 # Parse
 gem 'nokogiri'
+
+gem 'resque', :require => "resque/server"
