@@ -1,12 +1,11 @@
 require 'nokogiri'
 require 'open-uri'
 
-url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
-
 desc "Crawl Twitter"
 namespace :crawler do
 	task :fetch => :environment do
-		# Variable to count how manu tweets to add into the array of tweets
+		url = "https://twitter.com/search/realtime?q=soundtracking&src=typd"
+
 		previousTweet = ""
 
 		# Continue taking tweets
