@@ -27,8 +27,10 @@ namespace :crawler do
 				#Get song name
 				getSongInfo(tweet)
 				
-				# Add songs to database
-				add_to_db(@name, @username, @user_location, @artist_name, @song_name)
+				if @artist_name != nil && @song_name != nil
+					# Add songs to database
+					add_to_db(@name, @username, @user_location, @artist_name, @song_name)
+				end
 			end
 		end
 	end
@@ -70,11 +72,20 @@ def getSongInfo(tweet)
 				end
 			end
 		end	
+		the_name = @artist_name[/[\w\W]+[|]/i]
+		if the_name != nil
+			@artist_name = the_name[0..(the_name.length - 2)]
+		end
 		puts "Artist name: #{@artist_name}"
 
 		@song_name = tweet[/\"[\s\S\d\D\w\W]+\"/i]
-		if @song_name != nil
+		the_song = @song_name[/[\w\W\s\S"] +"[\w\W\s\S]+\w/i]
+		if the_song != nil
+			@song_name = the_song[3..(the_song.length)]
+		else
 			@song_name = @song_name[1..(@song_name.length - 2)]
+		end
+		if @song_name != nil
 			puts "Song name: #{@song_name}"
 		end
 	end
@@ -82,11 +93,11 @@ end
 
 # Method to save all the information in the database
 def add_to_db(name, username, user_location, artist_name, song_name)
-	TwitterCrawl.create(
-		name: @name,
-		username: @username,
-		user_location: @user_location,
-		artist_name: @artist_name,
-		song_name: @song_name
-	)
+	TwitterCrawl.create do |twitter|
+		twitter.name = @name
+		twitter.username = @username
+		twitter.user_location = @user_location
+		twitter.artist = {'name' => @artist_name}
+  		twitter.track = {'title' => @song_name}
+  	end
 end
