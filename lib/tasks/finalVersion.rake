@@ -1,6 +1,8 @@
 require 'nokogiri'
 require 'open-uri'
 
+Twitter.endpoint = "http://api.twitter.com"
+
 desc "Crawl Twitter"
 namespace :crawler do
 	task :fetch => :environment do
@@ -10,6 +12,7 @@ namespace :crawler do
 
 		# Continue taking tweets
 		while true
+			sleep 1
 			@name, @username, @user_location, @artist_name, @song_name = " "
 			doc = Nokogiri::HTML(open(url))
 
@@ -79,13 +82,13 @@ def getSongInfo(tweet)
 		puts "Artist name: #{@artist_name}"
 
 		@song_name = tweet[/\"[\s\S\d\D\w\W]+\"/i]
-		the_song = @song_name[/[\w\W\s\S"] +"[\w\W\s\S]+\w/i]
-		if the_song != nil
-			@song_name = the_song[3..(the_song.length)]
-		else
-			@song_name = @song_name[1..(@song_name.length - 2)]
-		end
 		if @song_name != nil
+			the_song = @song_name[/[\w\W\d\D\s\S"] +"[\w\W\d\D\s\S]+\w/i]
+			if the_song != nil
+				@song_name = the_song[3..(the_song.length)]
+			else
+				@song_name = @song_name[1..(@song_name.length - 2)]
+			end
 			puts "Song name: #{@song_name}"
 		end
 	end
