@@ -14,7 +14,14 @@ namespace :crawler do
 		while true
 			sleep 1
 			@name, @username, @user_location, @artist_name, @song_name = " "
-			doc = Nokogiri::HTML(open(url))
+			
+			begin 
+				doc = Nokogiri::HTML(open(url))
+			rescue
+				puts "Exception caught and ignored"
+				sleep 15
+				next
+			end
 
 			tweet = doc.at_css(".tweet-text").text
 			artist_name = []
@@ -41,11 +48,11 @@ end
 
 # Method to get info about the user
 def getUserInfo(doc, tweet)
-	@name = doc.at_css(".show-popup-with-id").text
-	puts "Name: #{@name}"
-
 	@username = doc.at_css(".js-action-profile-name b").text
 	puts "Username: #{@username}"
+
+	@name = doc.at_css(".show-popup-with-id").text
+	puts "Name: #{@name}"
 
 	@user_location = tweet[/\([\s]*@([^\)]+)\)/i]
 	if @user_location != nil
@@ -58,12 +65,25 @@ end
 def getSongInfo(tweet)
 	the_artist_name = tweet[/by[\w\W]+(((http\:\/\/){1}))/i]
 	if the_artist_name != nil
-		@artist_name = tweet[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
+		@artist_name = the_artist_name[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
 		if @artist_name != nil
 			@artist_name = @artist_name[1..@artist_name.length]
-			if Twitter.user("#{@artist_name}").verified == true
-				@artist_name = Twitter.user("#{@artist_name}").name
+			begin
+				userTweet = Twitter.user("#{@artist_name}").verified
+			rescue 	
+				puts "Exception caught and ignored"
+				sleep 15
+				return
 			end
+			if (userTweet != nil) && (userTweet == true)
+				begin
+					@artist_name = Twitter.user("#{@artist_name}").name
+				rescue
+					puts "Exception caught and ignored"
+					sleep 15
+					return
+				end
+			end	
 		else
 			@user_location = tweet[/\([\s]*@([^\)]+)\)/i]
 			if @user_location == nil
