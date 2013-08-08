@@ -15,6 +15,8 @@ namespace :crawler do
 			sleep 1
 			@name, @username, @user_location, @artist_name, @song_name = " "
 			
+			# Catch the exception thrown by the Timeout and End Of File errors
+			# which can occur when opening the webpage.
 			begin 
 				doc = Nokogiri::HTML(open(url))
 			rescue
@@ -34,9 +36,10 @@ namespace :crawler do
 				# Get user info
 				getUserInfo(doc, tweet)
 
-				#Get song name
+				# Get song name
 				getSongInfo(tweet)
 				
+				# Add in MongoDB only if the name of the artist and song is present.
 				if @artist_name != nil && @song_name != nil
 					# Add songs to database
 					add_to_db(@name, @username, @user_location, @artist_name, @song_name)
@@ -68,6 +71,10 @@ def getSongInfo(tweet)
 		@artist_name = the_artist_name[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
 		if @artist_name != nil
 			@artist_name = @artist_name[1..@artist_name.length]
+
+			# Catch the exception thrown by trying to get information
+			# from the artist tweet page info. The most common exception
+			# is the Timeout/execution expired.
 			begin
 				userTweet = Twitter.user("#{@artist_name}").verified
 			rescue 	
@@ -76,6 +83,10 @@ def getSongInfo(tweet)
 				return
 			end
 			if (userTweet != nil) && (userTweet == true)
+
+				# Catch the exception thrown by trying to get information
+				# from the artist tweet page info. The most common exception
+				# is the Timeout/execution expired.
 				begin
 					@artist_name = Twitter.user("#{@artist_name}").name
 				rescue
