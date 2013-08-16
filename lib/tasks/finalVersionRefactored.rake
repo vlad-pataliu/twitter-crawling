@@ -21,26 +21,21 @@ namespace :crawlerw do
 				next
 			end
 
-			# tweets = Twitter.search("soundtracking by -rt", { lang: 'en', count: 100 } )
-   #    tweets.statuses.map do |tweetz|
-   #      tweet = tweetz.text
+			tweet = doc.at_css(".tweet-text").text
+			if tweet != previousTweet
+				previousTweet = tweet
+				puts " "
+				puts "#{tweet} \n"
 
-				tweet = doc.at_css(".tweet-text").text
-				if tweet != previousTweet
-					previousTweet = tweet
-					puts " "
-					puts "#{tweet} \n"
+				# Get user info
+				getUserInfo(doc, tweet)
 
-					# Get user info
-					getUserInfo(doc, tweet)
-
-					# Get song name
-					getSongInfo(tweet)
+				# Get song name
+				getSongInfo(tweet)
 				
-					# Add songs to database only if the name of the artist and song is present.
-					add_to_db(@name, @username, @user_location, @artist_name, @song_name) unless @artist_name.nil? && @song_name.nil?
-				end
-			#end
+				# Add songs to database only if the name of the artist and song is present.
+				add_to_db(@name, @username, @user_location, @artist_name, @song_name) unless @artist_name.nil? && @song_name.nil?
+			end
 		end
 	end
 end

@@ -17,6 +17,8 @@ namespace :tCrawler do
       tweets.statuses.map do |tweetz|
         tweet = tweetz.text
 
+       	puts tweetz.id
+
 				if tweet != previousTweet
 					previousTweet = tweet
 					puts " "
@@ -28,7 +30,7 @@ namespace :tCrawler do
 					# Get song name
 					getSongInfo(tweet)
 				
-					if TwitterCrawl.where(name: "#{@name}", artist: { name:"#{@artist_name}" } ).exists? == false
+					if TwitterCrawl.where(name: "#{@name}", artist: { name: "#{@artist_name}" }, track: { title: "#{@song_name}" } ).exists? == false
 						# Add songs to database only if the name of the artist and song is present.
 						add_to_db(@name, @username, @user_location, @artist_name, @song_name) unless @artist_name.nil? && @song_name.nil?
 					end
