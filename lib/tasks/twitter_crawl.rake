@@ -98,7 +98,7 @@ end
 def get_user_real_name(handle)
   Twitter.user(handle).name
 rescue => e
-  puts "Exception: #{e.message}. Not verified."
+  puts "Exception: #{e.message}. Could not get user's real name."
   sleep 15
   false
 end
