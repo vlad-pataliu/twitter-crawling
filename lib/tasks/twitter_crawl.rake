@@ -65,14 +65,14 @@ namespace :twitter do
         
         # TODO: Save artist handle
         next unless @artist && @title
-        TwitterCrawl.create do |t|
-          t.name = name
-          t.username = username
-          t.location = location
-          t.date = Time.now.utc
-          t.song = {title: @title, artist: @artist}
-          t.tags = hashtags
-        end
+        # TwitterCrawl.create do |t|
+        #   t.name = name
+        #   t.username = username
+        #   t.location = location
+        #   t.date = Time.now.utc
+        #   t.song = {title: @title, artist: @artist}
+        #   t.tags = hashtags
+        # end
       end
     end
   end
