@@ -26,12 +26,13 @@ namespace :twitter do
         location = tweet[/\([\s]*@([^\)]+)\)/i]
         location = location[3..-2] if location
 
-        # TODO: Get the hashtags
+        hashtags = tweet.split.find_all{|word| /^#.+/.match word}
 
-        # puts "Date: #{tweet.created_at}"
+        # TODO: Get the hashtags
         puts "Name: #{name}"
         puts "Twitter Handle: #{username}"
         puts "User Location: #{location}"
+        puts "Hashtags: #{hashtags}"
         
         # FIXME: Songs with "by" in the name do not work. See Error #1 below
         song_metadata = tweet[/by[\w\W]+(((http\:\/\/){1}))/i]
@@ -70,7 +71,7 @@ namespace :twitter do
           t.location = location
           t.date = Time.now.utc
           t.song = {title: @title, artist: @artist}
-          # t.tags = 
+          t.tags = hashtags
         end
       end
     end
