@@ -22,10 +22,8 @@ end
 # Parse
 gem 'nokogiri'
 
-gem 'resque', :require => "resque/server"
-
+gem 'resque', require: "resque/server"
 gem 'resque-pool'
 
-#gem 'typhoeus'
-
-#gem "rack-timeout"
+# gem 'typhoeus'
+# gem "rack-timeout"
