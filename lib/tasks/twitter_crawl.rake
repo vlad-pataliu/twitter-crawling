@@ -39,8 +39,8 @@ namespace :twitter do
           artist_handle = song_metadata[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
           if artist_handle
             @artist_twitter = artist_handle
-            artist_handle = artist_handle[1..-1]
-            @artist = get_user_real_name(artist_handle) if verify_artist(artist_handle)
+            artist_handle_without_symbol = artist_handle[1..-1]
+            @artist = get_user_real_name(artist_handle_without_symbol) if verify_artist(artist_handle_without_symbol)
           else
             location = tweet[/\([\s]*@([^\)]+)\)/i]
             if !location
