@@ -28,7 +28,6 @@ namespace :twitter do
 
         hashtags = tweet.split.find_all{|word| /^#.+/.match word[1..-1]}
 
-        # TODO: Get the hashtags
         puts "Name: #{name}"
         puts "Twitter Handle: #{username}"
         puts "User Location: #{location}"
@@ -64,7 +63,6 @@ namespace :twitter do
           end
         end
         
-        # TODO: Save artist handle
         next unless @artist && @title
         # TwitterCrawl.create do |t|
         #   t.name = name
