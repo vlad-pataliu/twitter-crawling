@@ -26,7 +26,6 @@ namespace :twitter do
         location = tweet[/\([\s]*@([^\)]+)\)/i]
         location = location[3..-2] if location
 
-        # TODO: Get the date
         # TODO: Get the hashtags
 
         # puts "Date: #{tweet.created_at}"
@@ -69,7 +68,7 @@ namespace :twitter do
           t.name = name
           t.username = username
           t.location = location
-          # t.date = 
+          t.date = Time.now.utc
           t.song = {title: @title, artist: @artist}
           # t.tags = 
         end
