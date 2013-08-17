@@ -111,8 +111,7 @@ def add_to_db(name, username, user_location, artist_name, song_name)
 	TwitterCrawl.create { |twitter|
 		twitter.name = @name
 		twitter.username = @username
-		twitter.user_location = @user_location
-		twitter.artist = { name: @artist_name }
-  	twitter.track = { title: @song_name }
+		twitter.location = @user_location
+		twitter.song = {title: @song_name, artist: @artist_name}
   }
 end
