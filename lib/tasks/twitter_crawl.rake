@@ -7,7 +7,7 @@ namespace :twitter do
   task :crawler => :environment do
     q ||= 'soundtracking'
     url = "https://twitter.com/search/realtime?q=#{q}&src=typd"
-    previousTweet, @artist, @title = ''
+    previousTweet, @artist, @title, @artist_twitter = ''
 
     while true
       puts "Listening for new #{q} tweets..."
@@ -26,7 +26,7 @@ namespace :twitter do
         location = tweet[/\([\s]*@([^\)]+)\)/i]
         location = location[3..-2] if location
 
-        hashtags = tweet.split.find_all{|word| /^#.+/.match word}
+        hashtags = tweet.split.find_all{|word| /^#.+/.match word[1..-1]}
 
         # TODO: Get the hashtags
         puts "Name: #{name}"
@@ -39,6 +39,7 @@ namespace :twitter do
         if song_metadata
           artist_handle = song_metadata[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
           if artist_handle
+            @artist_twitter = artist_handle
             artist_handle = artist_handle[1..-1]
             @artist = get_user_real_name(artist_handle) if verify_artist(artist_handle)
           else
@@ -70,7 +71,7 @@ namespace :twitter do
         #   t.username = username
         #   t.location = location
         #   t.date = Time.now.utc
-        #   t.song = {title: @title, artist: @artist}
+        #   t.song = {title: @title, artist: {name: @artist, twitter: @artist_twitter}}
         #   t.tags = hashtags
         # end
       end
