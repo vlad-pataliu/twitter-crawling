@@ -1,6 +1,7 @@
 class TwitterCrawl
   include Mongoid::Document
   
+  field :text,     type: String
   field :name,     type: String
   field :username, type: String
   field :location, type: String

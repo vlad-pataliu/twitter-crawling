@@ -73,6 +73,7 @@ namespace :twitter do
         #   t.date = Time.now.utc
         #   t.song = {title: @title, artist: {name: @artist, twitter: @artist_twitter}}
         #   t.tags = hashtags
+        #   t.text = tweet
         # end
       end
     end
