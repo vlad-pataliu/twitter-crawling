@@ -33,8 +33,8 @@ namespace :twitter do
         puts "User Location: #{location}"
         puts "Hashtags: #{hashtags}"
         
-        # FIXME: Songs with "by" in the name do not work. See Error #1 below
-        song_metadata = tweet[/by[\w\W]+(((http\:\/\/){1}))/i]
+        song_metadata = tweet[/ by[\w\W]+(((http\:\/\/){1}))/i]
+        song_metadata = song_metadata[1..song_metadata.length] if !song_metadata.nil?
         if song_metadata
           artist_handle = song_metadata[/(?<=^|(?<=[^a-zA-Z0-9\_\.]))@([A-Za-z0-9\_]+)/i]
           if artist_handle
@@ -46,33 +46,35 @@ namespace :twitter do
             if !location
               @artist = song_metadata[3..-9]
             else
-              @artist = tweet[/by[\w\W]+[(@]/i]
+              @artist = song_metadata[/by[\w\W]+[(@]/i]
               @artist = @artist[3..-3] if @artist
             end
           end
 
-          the_name = @artist[/[\w\W]+[|]/i]
-          @artist = the_name[0..-2] if the_name
+          the_name = @artist[/[\w\W]+[|]/i] if @artist
+          @artist = the_name[0..-3] if the_name
           puts "Artist name: #{@artist}"
 
-          @title = tweet[/\"[\s\S\d\D\w\W]+\"/i]
+          @title = tweet[/\"[\s\S\d\D\w\W]+\" by/i]
           if @title
             the_song = @title[/[\w\W\d\D\s\S"] +"[\w\W\d\D\s\S]+\w/i]
-            @title = the_song ? the_song[3..-1] : @title[1..-2]
+            @title = the_song ? the_song[3..-1] : @title[1..-5]
+            title_verification = @title[/" by/i]
+            @title = @title[0..-5] if title_verification
             puts "Song name: #{@title}\n\n\n"
           end
         end
         
         next unless @artist && @title
-        # TwitterCrawl.create do |t|
-        #   t.name = name
-        #   t.username = username
-        #   t.location = location
-        #   t.date = Time.now.utc
-        #   t.song = {title: @title, artist: {name: @artist, twitter: @artist_twitter}}
-        #   t.tags = hashtags
-        #   t.text = tweet
-        # end
+        TwitterCrawl.create do |t|
+          t.text = tweet
+          t.name = name
+          t.username = username
+          t.location = location
+          t.date = Time.now.utc
+          t.song = {title: @title, artist: {name: @artist, twitter: @artist_twitter}}
+          t.tags = hashtags
+        end
       end
     end
   end
@@ -87,8 +89,7 @@ rescue => e
 end
 
 def verify_artist(artist)
-  Twitter.user(artist).verified
-  true
+  true if Twitter.user(artist).verified
 rescue => e
   puts "Exception: #{e.message}. Not verified."
   sleep 15
@@ -102,52 +103,3 @@ rescue => e
   sleep 15
   false
 end
-
-# FIXME: Error #1
-# My soundtrack: ♫ "Babylon" by David Gray (@ La Buena Vida, Davis, CA, USA) http://sdtk.fm/16VgTj9 
-
-# Name: Elias Mbvukuta
-# Twitter Handle: mbvukutaphiri
-# User Location: La Buena Vida, Davis, CA, USA
-# Artist name: on" by David Gray 
-# Song name: Babylon
-
-# CONSOLE TEST
-# song_metadata = tweet[/by[\w\W]+(((http\:\/\/){1}))/i]
-# => "bylon\" by David Gray (@ La Buena Vida, Davis, CA, USA) http://"
-
-# -----
-
-# WORKS
-# My soundtrack: ♫ "Pura Carroceria" by Los del Río (@ La Buena Vida, Davis, CA, USA) http://sdtk.fm/18BdJ3c 
-
-# Name: Elias Mbvukuta
-# Twitter Handle: mbvukutaphiri
-# User Location: La Buena Vida, Davis, CA, USA
-# Artist name: Los del Río 
-# Song name: Pura Carroceria
-
-# -----
-
-# SHOULD BE OK
-# Tweet text:
-# Now playing  ♫ "Wonderful Life" by Alter Bridge | via #soundtracking app http://instagram.com/p/dGW9louvBj/ 
-
-# Name: ☠☠☠  Chad  ☠☠☠
-# Twitter Handle: 916BUCKEYE
-# User Location: 
-# Artist name: Alter Bridge | via #soundtracking app
-# Song name: Wonderful Life
-
-# -----
-
-# Tweet text:
-# My soundtrack: ♫ "Summer Love (feat. Jose James)" by SOIL & "PIMP" SESSIONS http://sdtk.fm/19zk7wF 
-
-# ♫ 太陽べりぐ〜
-
-# Name: Chihiro☆
-# Twitter Handle: lovelychihiron
-# User Location: 
-# Artist name: SOIL & "PIMP" SESSIONS
-# Song name: PIMP

@@ -6,6 +6,6 @@ class TwitterCrawl
   field :username, type: String
   field :location, type: String
   field :date,     type: Time
-  field :song,		 type: Hash
+  field :song,	   type: Hash
   field :tags,	   type: Array
 end
