@@ -1,11 +1,11 @@
 class TwitterCrawl
   include Mongoid::Document
   
-  field :name,          type: String
-  field :username,      type: String
-  field :user_location, type: String
-  field :artist,		type: Hash
-  field :track,			type: Hash
-
-  field :artist_tags,	type: Array
+  field :text,     type: String
+  field :name,     type: String
+  field :username, type: String
+  field :location, type: String
+  field :date,     type: Time
+  field :song,		 type: Hash
+  field :tags,	   type: Array
 end

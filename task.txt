@@ -1,0 +1,14 @@
+hash_artist_tags = []
+if ar[0].blank? == false
+   if ((ar[0].tags != nil) && (ar[0].tags.blank?))
+     for var in 0..(ar[0].tags.length - 1)
+       hash_tmp_artist_tags = Hash.new
+       hash_tmp_artist_tags['name'] = ar[0].tags[var]
+       hash_artist_tags[var] = hash_tmp_artist_tags
+    end
+  end
+else
+  puts "Artist not found" + trackTmp.obj.artistId
+  puts "7digital name: " + trackArtistName7Digital
+end
+[15:0
