@@ -24,6 +24,3 @@ gem 'nokogiri'
 
 gem 'resque', require: "resque/server"
 gem 'resque-pool'
-
-# gem 'typhoeus'
-# gem "rack-timeout"
